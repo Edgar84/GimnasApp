@@ -9,9 +9,9 @@ public class Client {
     // Atributs
     private String nom;
     private String cognom;
-    private String dni;
+    private Dni dni;
     private int telefon;
-    private String email;
+    private Email email;
     private String sexe;
     private LocalDate dataNeixement;
     private String usuari;
@@ -21,7 +21,7 @@ public class Client {
     private boolean comunicacioComercial;
 
     // Constructors
-    public Client(String nom, String cognom, String dni, int telefon, String email, String sexe, String usuari, String pass, String compteBancari, boolean comunicacioComercial) {
+    public Client(String nom, String cognom, Dni dni, int telefon, Email email, String sexe, String usuari, String pass, String compteBancari, boolean comunicacioComercial) {
         this.nom = nom;
         this.cognom = cognom;
         this.dni = dni;
@@ -53,14 +53,17 @@ public class Client {
         String cognom = teclat.nextLine();
         
         String dni = "";
+        Dni dninn = new Dni();
         do{
             System.out.println("DNI:");
             dni = teclat.nextLine();
 
-            while (!new Dni(dni).validarDni()) {                    
+            while (!dninn.validarDni(dni)) {                    
                 System.out.println("El DNI introduït no es correcte");
                 dni = teclat.nextLine();
             }
+            dninn.setNum(dni);
+            this.dni = dninn;
             continua = true;
         }while (!continua);
         
