@@ -21,14 +21,14 @@ public class Client {
     private boolean comunicacioComercial;
 
     // Constructors
-    public Client(String nom, String cognom, Dni dni, int telefon, Email email, String sexe, String usuari, String pass, String compteBancari, boolean comunicacioComercial) {
+    public Client(String nom, String cognom, Dni dni, int telefon, Email email, String sexe,LocalDate dataNeixement, String usuari, String pass, String compteBancari, boolean comunicacioComercial) {
         this.nom = nom;
         this.cognom = cognom;
         this.dni = dni;
         this.telefon = telefon;
         this.email = email;
         this.sexe = sexe;
-        //this.dataNeixement = dataNeixement;
+        this.dataNeixement = dataNeixement;
         this.usuari = usuari;
         this.pass = pass;
         this.compteBancari = compteBancari;
