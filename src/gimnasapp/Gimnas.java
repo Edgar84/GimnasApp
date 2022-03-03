@@ -77,7 +77,8 @@ public class Gimnas {
                     c.altaClient();
                     break;
                 case 2:
-                    llistarClients();
+                    Client d = new Client();
+                    d.llistarClients();
                     break;
                 case 5:
                     gestionarGimnas();

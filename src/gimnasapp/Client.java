@@ -1,7 +1,13 @@
 
 package gimnasapp;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -16,12 +22,14 @@ public class Client {
     private LocalDate dataNeixement;
     private String usuari;
     private String pass;
-    private String compteBancari;
+    private CompteBancari compteBancari;
     private String condicio;
     private boolean comunicacioComercial;
+    
+    static ConnexioBD con = new ConnexioBD();
 
     // Constructors
-    public Client(String nom, String cognom, Dni dni, int telefon, Email email, String sexe,LocalDate dataNeixement, String usuari, String pass, String compteBancari, boolean comunicacioComercial) {
+    public Client(String nom, String cognom, Dni dni, int telefon, Email email, String sexe,LocalDate dataNeixement, String usuari, String pass, CompteBancari compteBancari, String condicio, boolean comunicacioComercial) {
         this.nom = nom;
         this.cognom = cognom;
         this.dni = dni;
@@ -32,6 +40,7 @@ public class Client {
         this.usuari = usuari;
         this.pass = pass;
         this.compteBancari = compteBancari;
+        this.condicio = condicio;
         this.comunicacioComercial = comunicacioComercial;
     }
     public Client() {
@@ -47,10 +56,10 @@ public class Client {
         System.out.println("*******DONAR D'ALTA*******");
         
         System.out.println("Nom:");
-        String nom = teclat.nextLine();
+        this.nom = teclat.nextLine();
         
         System.out.println("Cognom:");
-        String cognom = teclat.nextLine();
+        this.cognom = teclat.nextLine();
         
         String dni = "";
         Dni dninn = new Dni();
@@ -99,10 +108,10 @@ public class Client {
             continua = true;
         }while (!continua);
         
-        String sexe = "";
+        this.sexe = "";
         do {
             try {
-                while (sexe.equals("")) {   
+                while (this.sexe.equals("")) {   
                     System.out.println("Sexe:");
                     System.out.println("1- Home");
                     System.out.println("2- Dona");
@@ -112,10 +121,10 @@ public class Client {
                     switch(opcioMenu){
                         case 1:
                             System.out.println("Home");
-                            sexe = "H";
+                            this.sexe = "H";
                         case 2:
                             System.out.println("Dona");
-                            sexe = "D";
+                            this.sexe = "D";
                             break;
                         default:
                             System.out.println("Opció incorrecta");
@@ -132,32 +141,143 @@ public class Client {
         
         teclat.nextLine();
         
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        boolean dataCorrecta;
+        
+        do{
+            dataCorrecta = true;
+            System.out.println("Data de Neixement:");
+            System.out.println("(Format: DD/MM/YYYY)");
+            try{
+                this.dataNeixement = LocalDate.parse(teclat.next(),formatter);
+            }catch (Exception ex){
+                dataCorrecta = false;
+            }
+        }while (!dataCorrecta);       
+        
+        teclat.nextLine();
+        
         System.out.println("Usuari:");
-        String user = teclat.nextLine();
+        this.usuari = teclat.nextLine();
         
         System.out.println("Contrasenya:");
-        String pass = teclat.nextLine();        
+        this.pass = teclat.nextLine();        
         
-        String compteBancari = "";
+        String compte = "";
+        CompteBancari compteBancariVal = new CompteBancari();
         do{
             System.out.println("Compte bancari:");
-            compteBancari = teclat.nextLine();
+            compte = teclat.nextLine();
 
-            while (!new CompteBancari(compteBancari).validarIBAN(compteBancari)) {                    
+            while (compteBancariVal.validarIBAN(compte)) {                    
                 System.out.println("El Compte bancari introduït no es correcte");
-                compteBancari = teclat.nextLine();
+                compte = teclat.nextLine();
             }
+            compteBancariVal.setNumCompte(compte);
+            this.compteBancari = compteBancariVal;
             continua = true;
-        }while (!continua);
-        
-        /*****************************/
+        }while (!continua);       
+
         System.out.println("Condició:");
         String condicio = teclat.nextLine();
-        System.out.println("Comunicació comercial:");
-        String comunicacioComercial = teclat.next();
+       
+        boolean comunicacioComercial = false;
+        String comunicacio = "";
+        do {
+            try {
+                while (comunicacio.equals("")) {   
+                    System.out.println("Comunicació comercial:");
+                    System.out.println("1- Si");
+                    System.out.println("2- No");
+                    int opcioMenu = teclat.nextInt();
+                    continua = true;
+
+                    switch(opcioMenu){
+                        case 1:
+                            System.out.println("Si, vull comunicació comercial.");
+                            comunicacio = "1";
+                            comunicacioComercial = true;
+                        case 2:
+                            System.out.println("No, no en vull.");
+                            comunicacio = "2";
+                            comunicacioComercial = false;
+                            break;
+                        default:
+                            System.out.println("Opció incorrecta");
+                            sexe = "";
+                            break;
+                    }
+                }
+            } catch(InputMismatchException ex){
+                System.out.println("Només pots escollir entre Si(1) o No(2)");
+                teclat.next();
+                continua = false;
+            }
+        }while (!continua);
+        
+        insertarClient();
     }
     
-    private void mostrarclient(){
+    private void insertarClient(){
+        
+        try {
+            
+            String consulta = "INSERT INTO client (dni, nom, cognom, telefon, email, sexe, data_neixement, usuari, contrasenya, compte_bancari, condicio, comunicacio_comercial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            
+            PreparedStatement st = con.connexioBD.prepareStatement(consulta);
+            st.setString(1, this.dni.getNum());                
+            st.setString(2, this.nom);
+            st.setString(3, this.cognom);
+            st.setInt(4, this.telefon);
+            st.setString(5, this.email.getEmail());
+            st.setString(6, this.sexe);
+            st.setDate(7, Date.valueOf(this.dataNeixement));
+            st.setString(8, this.usuari);
+            st.setString(9, this.pass);
+            st.setString(10, this.compteBancari.getNumCompte());
+            st.setString(11, this.condicio);
+            st.setBoolean(12, this.comunicacioComercial);
+            
+            st.executeUpdate();
+            if(st.executeUpdate()==1){
+               System.out.println("Client afegit correctament");
+             }
+        } 
+        catch (SQLException ex) {
+            System.out.println("No s'ha pogut afegir el client a la Base de dades");
+        }
+    }
+    
+    private void llistarClients(){
+        
+        PreparedStatement ps = null;
+        try{
+
+            String consulta = "SELECT * FROM clients ORDER BY nom;";
+            ps = con.getConnection.prepareStatement(consulta);
+            ResultSet rs=ps.executeQuery();
+            while (rs.next()){
+                System.out.println("--------------");
+                System.out.print("DNI: " + rs.getInt("dni") + " | ");
+                System.out.print("Nom: " + rs.getString("nom") + " | ");
+                System.out.print("Cognom: " + rs.getInt("cognom") + " | ");
+                System.out.print("Telèfon: " + rs.getString("telefon") + " | ");
+                System.out.print("Usuari: " + rs.getDouble("usuari") + " | ");
+                System.out.println("Sexe: " + rs.getString("sexe") + " | ");
+            }
+            System.out.println("--------------");
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } finally {
+            if (ps != null){
+                try {
+                    ps.close();
+                } catch (SQLException sqle) {
+                    sqle.printStackTrace();
+                }
+            }
+        }
+        
         
     }
     

@@ -8,6 +8,10 @@ public class Email {
     public Email(String email) {
         this.email = email;
     }
+
+    public String getEmail() {
+        return email;
+    }
     
     public boolean validarEmail(){
         return this.email.contains("@") && this.email.substring(this.email.indexOf("@")).contains(".");

@@ -19,12 +19,18 @@ public class Dni {
         }
         
     }
+
+    public String getNum() {
+        return num;
+    }
+    
+    
     
     public boolean validarDni(String num){
         
         boolean esValid = false;
         
-        if(this.num.length() == 9){
+        if(num.length() == 9){
             for( int i = 0; i < num.substring(8).length(); i++ ){
                 if(!Character.isDigit(String.valueOf(num.substring(8).length()).charAt(i))){
                     return false;
@@ -32,6 +38,8 @@ public class Dni {
                     esValid = true;
                 }
             }
+        }else{
+            return false;
         }
         if(esValid){
             int numDni = Integer.parseInt(num.substring(0, 8));
@@ -50,5 +58,7 @@ public class Dni {
         
         return false;
     }
+    
+    
     
 }
