@@ -45,6 +45,7 @@ public class Gimnas {
                 case 2:
                     Activitat a = new Activitat();
                     a.veureActivitats();
+                    visualitzarActivitats();
                     break;
                 case 3:
                     sortir = true;
