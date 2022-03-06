@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="GimnasApp">
+  <ClassDiagramComponents>
+    <Class name="Activitat" package="gimnasapp" visibility="public" xPosition="20.0" yPosition="20.0">
+      <Fields>
+        <Field name="nom" type="String" visibility="private"/>
+        <Field name="descripcio" type="String" visibility="private"/>
+        <Field name="duradaSessio" type="int" visibility="private"/>
+        <Field name="reserves" type="int" visibility="private"/>
+        <Field name="tantPercent" type="double" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="veureActivitats" returnType="ArrayList&lt;Activitat&gt;" visibility="public"/>
+        <Method name="afegirDadesActivitats" returnType="Activitat" visibility="private">
+          <Argument type="ResultSet" name="rs"/>
+        </Method>
+        <Method name="getNom" returnType="String" visibility="public"/>
+        <Method name="getDescripcio" returnType="String" visibility="public"/>
+        <Method name="getDuradaSessio" returnType="int" visibility="public"/>
+        <Method name="getReserves" returnType="int" visibility="public"/>
+        <Method name="getTantPercent" returnType="double" visibility="public"/>
+        <Method name="setNom" returnType="void" visibility="public">
+          <Argument type="String" name="nom"/>
+        </Method>
+        <Method name="setDescripcio" returnType="void" visibility="public">
+          <Argument type="String" name="descripcio"/>
+        </Method>
+        <Method name="setDuradaSessio" returnType="void" visibility="public">
+          <Argument type="int" name="duradaSessio"/>
+        </Method>
+        <Method name="setNumReserves" returnType="void" visibility="public">
+          <Argument type="int" name="reserves"/>
+        </Method>
+        <Method name="setTantPercent" returnType="void" visibility="public">
+          <Argument type="double" name="tantPercent"/>
+        </Method>
+        <Method name="toString" returnType="String" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Client" package="gimnasapp" visibility="public" xPosition="143.0" yPosition="360.0">
+      <Fields>
+        <Field name="nom" type="String" visibility="private"/>
+        <Field name="cognom" type="String" visibility="private"/>
+        <Field name="dni" type="Dni" visibility="private"/>
+        <Field name="telefon" type="int" visibility="private"/>
+        <Field name="email" type="Email" visibility="private"/>
+        <Field name="sexe" type="String" visibility="private"/>
+        <Field name="dataNeixement" type="LocalDate" visibility="private"/>
+        <Field name="usuari" type="String" visibility="private"/>
+        <Field name="pass" type="String" visibility="private"/>
+        <Field name="compteBancari" type="CompteBancari" visibility="private"/>
+        <Field name="condicio" type="String" visibility="private"/>
+        <Field name="comunicacioComercial" type="boolean" visibility="private"/>
+        <Field name="edat" type="int" visibility="private"/>
+        <Field name="reserves" type="int" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="nom"/>
+          <Argument type="String" name="cognom"/>
+          <Argument type="Dni" name="dni"/>
+          <Argument type="int" name="telefon"/>
+          <Argument type="Email" name="email"/>
+          <Argument type="String" name="sexe"/>
+          <Argument type="LocalDate" name="dataNeixement"/>
+          <Argument type="String" name="usuari"/>
+          <Argument type="String" name="pass"/>
+          <Argument type="CompteBancari" name="compteBancari"/>
+          <Argument type="String" name="condicio"/>
+          <Argument type="boolean" name="comunicacioComercial"/>
+        </Constructor>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="altaClient" returnType="void" visibility="public"/>
+        <Method name="insertarClient" returnType="void" visibility="private"/>
+        <Method name="consultarClients" returnType="void" visibility="public"/>
+        <Method name="ConsultaConsultarClients" returnType="Client" visibility="private">
+          <Argument type="String" name="dni"/>
+        </Method>
+        <Method name="ordenarPerCognom" returnType="ArrayList&lt;Client&gt;" visibility="public"/>
+        <Method name="ordenarPerEdat" returnType="ArrayList&lt;Client&gt;" visibility="public"/>
+        <Method name="ordenarPerReserves" returnType="ArrayList&lt;Client&gt;" visibility="public"/>
+        <Method name="baixaClient" returnType="void" visibility="public"/>
+        <Method name="afegirDadesAClient" returnType="Client" visibility="private">
+          <Argument type="ResultSet" name="rs"/>
+        </Method>
+        <Method name="encriptarPass" returnType="String" visibility="private">
+          <Argument type="String" name="password"/>
+        </Method>
+        <Method name="calcularEdat" returnType="void" visibility="private"/>
+        <Method name="getNom" returnType="String" visibility="public"/>
+        <Method name="getCognom" returnType="String" visibility="public"/>
+        <Method name="getDni" returnType="Dni" visibility="public"/>
+        <Method name="getTelefon" returnType="int" visibility="public"/>
+        <Method name="getEmail" returnType="Email" visibility="public"/>
+        <Method name="getSexe" returnType="String" visibility="public"/>
+        <Method name="getDataNeixement" returnType="LocalDate" visibility="public"/>
+        <Method name="getCompteBancari" returnType="CompteBancari" visibility="public"/>
+        <Method name="getUsuari" returnType="String" visibility="public"/>
+        <Method name="getPass" returnType="String" visibility="public"/>
+        <Method name="getCondicio" returnType="String" visibility="public"/>
+        <Method name="isComunicacioComercial" returnType="boolean" visibility="public"/>
+        <Method name="getEdat" returnType="int" visibility="public"/>
+        <Method name="getReserves" returnType="int" visibility="public"/>
+        <Method name="setNom" returnType="void" visibility="public">
+          <Argument type="String" name="nom"/>
+        </Method>
+        <Method name="setCognom" returnType="void" visibility="public">
+          <Argument type="String" name="cognom"/>
+        </Method>
+        <Method name="setDni" returnType="void" visibility="public">
+          <Argument type="Dni" name="dni"/>
+        </Method>
+        <Method name="setTelefon" returnType="void" visibility="public">
+          <Argument type="int" name="telefon"/>
+        </Method>
+        <Method name="setEmail" returnType="void" visibility="public">
+          <Argument type="Email" name="email"/>
+        </Method>
+        <Method name="setSexe" returnType="void" visibility="public">
+          <Argument type="String" name="sexe"/>
+        </Method>
+        <Method name="setDataNeixement" returnType="void" visibility="public">
+          <Argument type="LocalDate" name="dataNeixement"/>
+        </Method>
+        <Method name="setUsuari" returnType="void" visibility="public">
+          <Argument type="String" name="usuari"/>
+        </Method>
+        <Method name="setPass" returnType="void" visibility="public">
+          <Argument type="String" name="pass"/>
+        </Method>
+        <Method name="setCompteBancari" returnType="void" visibility="public">
+          <Argument type="CompteBancari" name="compteBancari"/>
+        </Method>
+        <Method name="setCondicio" returnType="void" visibility="public">
+          <Argument type="String" name="condicio"/>
+        </Method>
+        <Method name="setComunicacioComercial" returnType="void" visibility="public">
+          <Argument type="boolean" name="comunicacioComercial"/>
+        </Method>
+        <Method name="setEdat" returnType="void" visibility="public">
+          <Argument type="int" name="edat"/>
+        </Method>
+        <Method name="setReserves" returnType="void" visibility="public">
+          <Argument type="int" name="reserves"/>
+        </Method>
+        <Method name="toString" returnType="String" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="CompteBancari" package="gimnasapp" visibility="public" xPosition="302.0" yPosition="820.0">
+      <Fields>
+        <Field name="numCompte" type="String" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="numCompte"/>
+        </Constructor>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="getNumCompte" returnType="String" visibility="public"/>
+        <Method name="setNumCompte" returnType="void" visibility="public">
+          <Argument type="String" name="numCompte"/>
+        </Method>
+        <Method name="validarIBAN" returnType="boolean" visibility="public">
+          <Argument type="String" name="cuenta"/>
+        </Method>
+        <Method name="toString" returnType="String" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="ConnexioBD" package="gimnasapp" visibility="public" xPosition="20.0" yPosition="623.0">
+      <Fields>
+        <Field name="servidor" type="String" visibility="private"/>
+        <Field name="ddbb" type="String" visibility="private"/>
+        <Field name="user" type="String" visibility="private"/>
+        <Field name="pass" type="String" visibility="private"/>
+        <Field name="connexioBD" type="Connection" visibility="package" isStatic="true"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="private"/>
+      </Constructors>
+      <Methods>
+        <Method name="getConnexioBD" returnType="Connection" visibility="public" isStatic="true"/>
+      </Methods>
+    </Class>
+    <Class name="DbAccess" package="gimnasapp" visibility="public" xPosition="20.0" yPosition="859.0">
+      <Fields>
+        <Field name="url" type="String" visibility="private"/>
+        <Field name="schema" type="String" visibility="private"/>
+        <Field name="user" type="String" visibility="private"/>
+        <Field name="pass" type="String" visibility="private"/>
+        <Field name="conn" type="Connection" visibility="package" isStatic="true"/>
+      </Fields>
+      <Constructors/>
+      <Methods>
+        <Method name="getConnection" returnType="void" visibility="public"/>
+        <Method name="closeConnection" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Dni" package="gimnasapp" visibility="public" xPosition="368.0" yPosition="421.0">
+      <Fields>
+        <Field name="num" type="String" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="num"/>
+        </Constructor>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="setNum" returnType="void" visibility="public">
+          <Argument type="String" name="num"/>
+        </Method>
+        <Method name="getNum" returnType="String" visibility="public"/>
+        <Method name="validarDni" returnType="boolean" visibility="public">
+          <Argument type="String" name="num"/>
+        </Method>
+        <Method name="toString" returnType="String" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Email" package="gimnasapp" visibility="public" xPosition="970.0" yPosition="20.0">
+      <Fields>
+        <Field name="email" type="String" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="email"/>
+        </Constructor>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="setEmail" returnType="void" visibility="public">
+          <Argument type="String" name="email"/>
+        </Method>
+        <Method name="getEmail" returnType="String" visibility="public"/>
+        <Method name="validarEmail" returnType="boolean" visibility="public">
+          <Argument type="String" name="email"/>
+        </Method>
+        <Method name="toString" returnType="String" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Gimnas" package="gimnasapp" visibility="public" xPosition="512.0" yPosition="20.0">
+      <Fields>
+        <Field name="nom" type="String" visibility="private"/>
+        <Field name="CIF" type="String" visibility="private"/>
+        <Field name="telefon" type="String" visibility="private"/>
+        <Field name="clients" type="ArrayList&lt;Client&gt;" visibility="private"/>
+        <Field name="activitats" type="ArrayList&lt;Activitat&gt;" visibility="private"/>
+        <Field name="teclat" type="Scanner" visibility="package"/>
+        <Field name="sortir" type="boolean" visibility="package"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="String" name="nom"/>
+          <Argument type="String" name="CIF"/>
+          <Argument type="String" name="telefon"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="gestionarGimnas" returnType="void" visibility="public"/>
+        <Method name="subMenuGestioClients" returnType="void" visibility="private"/>
+        <Method name="subMenuVisualitzarClients" returnType="void" visibility="private"/>
+        <Method name="visualitzarClients" returnType="void" visibility="private"/>
+        <Method name="visualitzarActivitats" returnType="void" visibility="private"/>
+      </Methods>
+    </Class>
+    <Class name="GimnasApp" package="gimnasapp" visibility="public" xPosition="20.0" yPosition="502.0">
+      <Fields/>
+      <Constructors/>
+      <Methods>
+        <Method name="main" returnType="void" visibility="public" isStatic="true">
+          <Argument type="String[]" name="args"/>
+        </Method>
+      </Methods>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <HasRelation name="compteBancari" source="gimnasapp.Client" target="gimnasapp.CompteBancari" type="Aggregation" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="gimnasapp.Client" target="gimnasapp.Client" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="gimnasapp.Activitat" target="gimnasapp.Activitat" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="clients" source="gimnasapp.Gimnas" target="gimnasapp.Client" type="Aggregation" sourceCardinality="1..1" targetCardinality="0..*" collectionType="ArrayList&lt;Client&gt;"/>
+    <UseRelation source="gimnasapp.Client" target="gimnasapp.CompteBancari" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="gimnasapp.Client" target="gimnasapp.Email" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="email" source="gimnasapp.Client" target="gimnasapp.Email" type="Aggregation" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="gimnasapp.Client" target="gimnasapp.Dni" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="dni" source="gimnasapp.Client" target="gimnasapp.Dni" type="Aggregation" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="activitats" source="gimnasapp.Gimnas" target="gimnasapp.Activitat" type="Aggregation" sourceCardinality="1..1" targetCardinality="0..*" collectionType="ArrayList&lt;Activitat&gt;"/>
+  </ClassDiagramRelations>
+</ClassDiagram>

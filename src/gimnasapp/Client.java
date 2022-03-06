@@ -262,6 +262,7 @@ public class Client {
             
             st.executeUpdate();
             
+            
         }catch (SQLException ex) {
             System.out.println("No s'ha pogut afegir el client a la Base de dades" + st);
         }finally {
@@ -298,6 +299,7 @@ public class Client {
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()){
+                afegirDadesAClient(rs);
                 return this;
             }
             
