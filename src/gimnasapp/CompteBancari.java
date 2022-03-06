@@ -70,7 +70,7 @@ public class CompteBancari {
 
     @Override
     public String toString() {
-        return this.numCompte;
+        return this.getNumCompte();
     }
     
 }

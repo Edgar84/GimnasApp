@@ -9,11 +9,28 @@ public class Email {
         this.email = email;
     }
 
+    public Email() {
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+
     public String getEmail() {
         return email;
     }
     
-    public boolean validarEmail(){
-        return this.email.contains("@") && this.email.substring(this.email.indexOf("@")).contains(".");
+    public boolean validarEmail(String email){
+        return email.contains("@") && email.substring(email.indexOf("@")).contains(".");
     }
+    
+    // Override
+
+    @Override
+    public String toString() {
+        return this.getEmail();
+    }
+    
+   
 }

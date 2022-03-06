@@ -3,6 +3,7 @@ package gimnasapp;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.*;
 
 
 public class ConnexioBD {
@@ -13,17 +14,27 @@ public class ConnexioBD {
 
     static Connection connexioBD = null;
     
-    public void connexioBD(){
-        servidor = "jdbc:mysql://localhost:3307/";
-        ddbb = "db_gimnas";
+    private  ConnexioBD(){
+        servidor = "jdbc:mysql://127.0.0.1:3307/db_gimnas";
+        //ddbb = "db_gimnas";
         user = "root";
         pass = "root";
         
         try {
-            connexioBD = DriverManager.getConnection(servidor + ddbb, user, pass);
+            connexioBD = DriverManager.getConnection(servidor, user, pass);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    public static Connection getConnexioBD() {
+        if (connexioBD ==null){
+            new ConnexioBD();
+        }
+        return connexioBD;
+        
+    }
+    
+    
     
 }

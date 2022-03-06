@@ -1,15 +1,22 @@
 
 package gimnasapp;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import jdk.nashorn.internal.ir.BreakNode;
 
 public class Client {
     // Atributs
@@ -25,8 +32,10 @@ public class Client {
     private CompteBancari compteBancari;
     private String condicio;
     private boolean comunicacioComercial;
+    private int edat;
+    private int reserves;
     
-    static ConnexioBD con = new ConnexioBD();
+    //static ConnexioBD con = new ConnexioBD();
 
     // Constructors
     public Client(String nom, String cognom, Dni dni, int telefon, Email email, String sexe,LocalDate dataNeixement, String usuari, String pass, CompteBancari compteBancari, String condicio, boolean comunicacioComercial) {
@@ -49,7 +58,7 @@ public class Client {
     
     
     // Functions
-    public void altaClient(){
+    public void altaClient() throws SQLException, NoSuchAlgorithmException{
         Scanner teclat = new Scanner(System.in); 
         boolean continua = false;
         
@@ -71,10 +80,16 @@ public class Client {
                 System.out.println("El DNI introduït no es correcte");
                 dni = teclat.nextLine();
             }
-            dninn.setNum(dni);
-            this.dni = dninn;
-            continua = true;
+            if(ConsultaConsultarClients(dni) != null){
+                System.out.println("Aquest DNI ja está a la base de dades");
+            }else{
+                continua = true;
+            }
+            
         }while (!continua);
+        
+        dninn.setNum(dni);
+        this.dni = dninn;
         
         int tel = 0;
         do{
@@ -96,15 +111,19 @@ public class Client {
         
         teclat.nextLine();
         
-        String email = "";
+  
+        Email email = new Email();
+        String mail = "";
         do{
             System.out.println("Email:");
-            email = teclat.nextLine();
+            mail = teclat.nextLine();
 
-            while (!new Email(email).validarEmail()) {                    
+            while (!email.validarEmail(mail)) {                    
                 System.out.println("El correu introduït no es correcte");
-                email = teclat.nextLine();
+                mail = teclat.nextLine();
             }
+            email.setEmail(mail);
+            this.email = email;
             continua = true;
         }while (!continua);
         
@@ -161,7 +180,7 @@ public class Client {
         this.usuari = teclat.nextLine();
         
         System.out.println("Contrasenya:");
-        this.pass = teclat.nextLine();        
+        this.pass = encriptarPass(teclat.nextLine());        
         
         String compte = "";
         CompteBancari compteBancariVal = new CompteBancari();
@@ -197,6 +216,7 @@ public class Client {
                             System.out.println("Si, vull comunicació comercial.");
                             comunicacio = "1";
                             comunicacioComercial = true;
+                            break;
                         case 2:
                             System.out.println("No, no en vull.");
                             comunicacio = "2";
@@ -218,18 +238,20 @@ public class Client {
         insertarClient();
     }
     
-    private void insertarClient(){
+    private void insertarClient() throws SQLException{
         
+        Connection con = ConnexioBD.getConnexioBD();
+        PreparedStatement st = null;
+        String consulta = "";
+        consulta = "INSERT INTO client (dni, nom, cognom, telefon, email, sexe, data_neixement, usuari, contrasenya, compte_bancari, condicio, comunicacio_comercial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try {
-            
-            String consulta = "INSERT INTO client (dni, nom, cognom, telefon, email, sexe, data_neixement, usuari, contrasenya, compte_bancari, condicio, comunicacio_comercial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            
-            PreparedStatement st = con.connexioBD.prepareStatement(consulta);
+           
+            st = con.prepareStatement(consulta);
             st.setString(1, this.dni.getNum());                
             st.setString(2, this.nom);
             st.setString(3, this.cognom);
             st.setInt(4, this.telefon);
-            st.setString(5, this.email.getEmail());
+            st.setString(5, email.getEmail());
             st.setString(6, this.sexe);
             st.setDate(7, Date.valueOf(this.dataNeixement));
             st.setString(8, this.usuari);
@@ -239,51 +261,337 @@ public class Client {
             st.setBoolean(12, this.comunicacioComercial);
             
             st.executeUpdate();
-            if(st.executeUpdate()==1){
-               System.out.println("Client afegit correctament");
-             }
-        } 
-        catch (SQLException ex) {
-            System.out.println("No s'ha pogut afegir el client a la Base de dades");
+            
+        }catch (SQLException ex) {
+            System.out.println("No s'ha pogut afegir el client a la Base de dades" + st);
+        }finally {
+            if (st != null){
+                System.out.println("\nClient afegit correcatment:");
+            }
         }
+        
     }
     
-    private void llistarClients(){
+    public void consultarClients(){
+        Scanner teclat = new Scanner(System.in);
+        System.out.println("Introdueix el DNI a consultar:");
         
-        PreparedStatement ps = null;
-        try{
+        String dni = teclat.nextLine();
+        Client clientTrobat = ConsultaConsultarClients(dni);
 
-            String consulta = "SELECT * FROM clients ORDER BY nom;";
-            ps = con.getConnection.prepareStatement(consulta);
-            ResultSet rs=ps.executeQuery();
-            while (rs.next()){
-                System.out.println("--------------");
-                System.out.print("DNI: " + rs.getInt("dni") + " | ");
-                System.out.print("Nom: " + rs.getString("nom") + " | ");
-                System.out.print("Cognom: " + rs.getInt("cognom") + " | ");
-                System.out.print("Telèfon: " + rs.getString("telefon") + " | ");
-                System.out.print("Usuari: " + rs.getDouble("usuari") + " | ");
-                System.out.println("Sexe: " + rs.getString("sexe") + " | ");
+        if (clientTrobat != null) {
+            System.out.println(clientTrobat.toString());
+        } else {
+            System.out.println("Aquest client no es troba la base de dades");
+        } 
+    }
+    
+    private Client ConsultaConsultarClients(String dni){
+        
+        Connection con = ConnexioBD.getConnexioBD();
+        PreparedStatement ps = null;
+        String consulta = "SELECT * FROM client WHERE dni = ?;";
+        
+        try{
+            ps = con.prepareStatement(consulta);
+            ps.setString(1, dni);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()){
+                return this;
             }
-            System.out.println("--------------");
+            
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-        } finally {
+        }
+        
+        return null;
+    }
+    
+    public ArrayList<Client> ordenarPerCognom(){
+        
+        ArrayList<Client> clients = new ArrayList<>();
+
+        Connection con = ConnexioBD.getConnexioBD();
+        PreparedStatement ps = null;
+        
+        try{
+            String consulta = "SELECT * FROM client ORDER BY cognom;";
+            ps = con.prepareStatement(consulta);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()){
+                Client clnt = new Client();
+                clnt.afegirDadesAClient(rs);
+                clients.add(clnt);
+            }
+            
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        
+        return  clients;
+        
+    }
+            
+    public ArrayList<Client> ordenarPerEdat(){
+        
+        ArrayList<Client> clients = new ArrayList<>();
+
+        Connection con = ConnexioBD.getConnexioBD();
+        PreparedStatement ps = null;
+        
+        try{
+            String consulta = "SELECT * FROM client ORDER BY data_neixement;";
+            ps = con.prepareStatement(consulta);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()){
+                Client clnt = new Client();
+                clnt.afegirDadesAClient(rs);
+                clients.add(clnt);
+            }
+            
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        
+        return  clients;
+        
+    }
+            
+    public ArrayList<Client> ordenarPerReserves(){
+        
+        ArrayList<Client> clients = new ArrayList<>();
+
+        Connection con = ConnexioBD.getConnexioBD();
+        PreparedStatement ps = null;
+        
+        try{
+            String consulta = "SELECT client.*,count(reserva_colectiva.dni) + (SELECT count(reserva_lliure.dni) FROM reserva_lliure WHERE reserva_lliure.dni = client.dni)as Reserves FROM reserva_colectiva, client WHERE reserva_colectiva.dni = client.dni GROUP BY reserva_colectiva.dni  ORDER BY count(reserva_colectiva.dni) + (SELECT count(reserva_lliure.dni) FROM reserva_lliure WHERE reserva_lliure.dni = client.dni) desc;";
+            ps = con.prepareStatement(consulta);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()){
+                Client clnt = new Client();
+                clnt.afegirDadesAClient(rs);
+                clnt.setReserves(rs.getInt("Reserves"));
+                clients.add(clnt);
+            }
+            
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        
+        return  clients;
+        
+    }
+    
+    public void baixaClient() {
+        Scanner teclat = new Scanner(System.in);
+        Connection con = ConnexioBD.getConnexioBD();
+        Boolean continua = false;
+        System.out.print("DNI del client per donar de baixa: ");
+        
+        LocalDate dataAvui = LocalDate.now();
+        PreparedStatement ps = null;
+        
+        Dni dninn = new Dni();
+        String dni = "";
+        
+        do{
+            System.out.println("DNI:");
+            dni = teclat.nextLine();
+
+            while (!dninn.validarDni(dni)) {                    
+                System.out.println("Introdueix un DNI correcte:");
+                dni = teclat.nextLine();
+            }
+            continua = true;
+        }while (!continua);
+        
+        
+        String consulta = "UPDATE es_dona SET data_baixa = ? WHERE dni = ?;";
+        
+        try {
+            ps = con.prepareStatement(consulta);
+            ps.setDate(1, Date.valueOf(dataAvui));
+            ps.setString(2, dni);
+            
+            ps.executeUpdate();
+            
+        }catch (SQLException ex) {
+            System.out.println("No s'ha pogut donar de baixa el client");
+        }finally {
             if (ps != null){
-                try {
-                    ps.close();
-                } catch (SQLException sqle) {
-                    sqle.printStackTrace();
-                }
+                System.out.println("\nEl client " + dni + " ha sigut donat de baixa.\n");
             }
         }
         
-        
     }
+    
+    
+    private Client afegirDadesAClient(ResultSet rs) throws SQLException {
+        
+        this.setNom(rs.getString("nom"));
+        this.setCognom(rs.getString("cognom"));
+        this.setDni(new Dni(rs.getString("dni")));  // Crear objecte per DNI
+        this.setTelefon(rs.getInt("telefon"));
+        this.setEmail(new Email(rs.getString("email")));    // Crear objecte per Email
+        this.setSexe(rs.getString("sexe"));
+        this.setDataNeixement(rs.getDate("data_neixement").toLocalDate());
+        this.setUsuari(rs.getString("usuari"));
+        this.setPass(rs.getString("contrasenya"));
+        this.setCompteBancari(new CompteBancari(rs.getString("compte_bancari")));    // Crear objecte per Compte bancari
+        this.setCondicio(rs.getString("condicio"));
+        this.setComunicacioComercial(rs.getBoolean("comunicacio_comercial"));
+        
+        calcularEdat();
+        
+        return this;
+    }
+    
+    private String encriptarPass(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] messageDigest = md.digest(password.getBytes());
+        BigInteger bigInt = new BigInteger(1, messageDigest);
+        return bigInt.toString(16);
+    
+    }
+    
+    private void calcularEdat() {
+        LocalDate avui = LocalDate.now();
+        this.edat = Period.between(this.dataNeixement, avui).getYears();
+    }
+    
+    
+    
+    // Getters
+
+    public String getNom() {
+        return nom;
+    }
+
+    public String getCognom() {
+        return cognom;
+    }
+
+    public Dni getDni() {
+        return dni;
+    }
+
+    public int getTelefon() {
+        return telefon;
+    }
+
+    public Email getEmail() {
+        return email;
+    }
+
+    public String getSexe() {
+        return sexe;
+    }
+
+    public LocalDate getDataNeixement() {
+        return dataNeixement;
+    }
+
+    public CompteBancari getCompteBancari() {
+        return compteBancari;
+    }
+
+    public String getUsuari() {
+        return usuari;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public String getCondicio() {
+        return condicio;
+    }
+
+    public boolean isComunicacioComercial() {
+        return comunicacioComercial;
+    }
+
+    public int getEdat() {
+        return edat;
+    }
+
+    public int getReserves() {
+        return reserves;
+    }
+    
+    
+    
+    
+    // Setters
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setCognom(String cognom) {
+        this.cognom = cognom;
+    }
+
+    public void setDni(Dni dni) {
+        this.dni = dni;
+    }
+
+    public void setTelefon(int telefon) {
+        this.telefon = telefon;
+    }
+
+    public void setEmail(Email email) {
+        this.email = email;
+    }
+
+    public void setSexe(String sexe) {
+        this.sexe = sexe;
+    }
+
+    public void setDataNeixement(LocalDate dataNeixement) {
+        this.dataNeixement = dataNeixement;
+    }
+
+    public void setUsuari(String usuari) {
+        this.usuari = usuari;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+
+    public void setCompteBancari(CompteBancari compteBancari) {
+        this.compteBancari = compteBancari;
+    }
+
+    public void setCondicio(String condicio) {
+        this.condicio = condicio;
+    }
+
+    public void setComunicacioComercial(boolean comunicacioComercial) {
+        this.comunicacioComercial = comunicacioComercial;
+    }
+
+    public void setEdat(int edat) {
+        this.edat = edat;
+    }
+    
+    public void setReserves(int reserves) {
+        this.reserves = reserves;
+    }
+    
+ 
+    
+    // Override
     
     @Override
     public String toString(){
-        return "Client {Nom:" + this.nom + ", Cognom: " + this.cognom + ", DNI: " + this.dni + ", Tel: " + this.telefon + ", Email: " + this.email + ", sexe: " + this.sexe + ", Usuari: " + this.usuari + ", Pass: ******, Compte Bancari: " + this.compteBancari + ", Condició: " + this.condicio + ", Comunicació comercial: " + this.comunicacioComercial;
+        return "Client: {\nNom: " + this.nom + "\nCognom: " + this.cognom + "\nDNI: " + this.dni + "\nTel: " + this.telefon + "\nEmail: " + this.email + "\nSexe: " + this.sexe + "\nData de neixement: " + this.dataNeixement + "\nEdat: " + this.edat + "\nUsuari: " + this.usuari + "\nPass: ******\nCompte Bancari: " + this.compteBancari + "\nCondició: " + this.condicio + "\nComunicació comercial: " + this.comunicacioComercial + "\n}";
     }
     
 }

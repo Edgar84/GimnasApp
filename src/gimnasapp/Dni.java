@@ -24,8 +24,6 @@ public class Dni {
         return num;
     }
     
-    
-    
     public boolean validarDni(String num){
         
         boolean esValid = false;
@@ -58,7 +56,14 @@ public class Dni {
         
         return false;
     }
+
     
+    // Overrides
+    
+    @Override
+    public String toString() {
+        return this.getNum(); 
+    }
     
     
 }
